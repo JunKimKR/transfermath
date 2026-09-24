@@ -243,3 +243,4 @@ svg circle.pt.op{fill:var(--paper)}
 .m:not(.k),.md:not(.k){font-family:'IBM Plex Mono',monospace;font-size:.86em;color:var(--ink2)}
 .md{display:block;margin:.9em 0;overflow-x:auto;overflow-y:hidden}
 .md:not(.k){white-space:pre-wrap;padding:6px 0}
+.m.wide{display:inline-block;max-width:100%;overflow-x:auto;overflow-y:hidden;vertical-align:middle;padding-bottom:2px}

@@ -6,6 +6,10 @@
       var src = el.textContent; el.classList.add('k');
       try { window.katex.render(src, el, { displayMode: el.classList.contains('md'), macros: Object.assign({}, window.KMACROS || {}), throwOnError: false, strict: false }); } catch (e) {}
     });
+    // 한 번에 읽기 (레이아웃 한 번만): 칸보다 넓은 인라인 수식은 가로 스크롤로
+    var wide = [];
+    root.querySelectorAll('.m.k').forEach(function(el){ var p = el.parentElement; if (p && el.offsetWidth > p.clientWidth) wide.push(el); });
+    wide.forEach(function(el){ el.classList.add('wide'); });
     return true;
   }
   var secs = Array.prototype.slice.call(document.querySelectorAll('section.ch'));
