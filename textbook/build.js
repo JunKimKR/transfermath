@@ -29,9 +29,8 @@ let mathErrors = 0, mathCount = 0;
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 function tex(s, display) {
   mathCount++;
-  try { katex.renderToString(s, { displayMode: display, throwOnError: true, macros: { ...macros }, strict: false }); }
-  catch (e) { mathErrors++; console.error('KaTeX:', e.message.slice(0, 160), '\n   in:', s.slice(0, 120)); }
-  return display ? `<span class="md">${esc(s)}</span>` : `<span class="m">${esc(s)}</span>`;
+  try { return katex.renderToString(s, { displayMode: display, throwOnError: true, macros: { ...macros }, strict: false, output: 'html' }); }
+  catch (e) { mathErrors++; console.error('KaTeX:', e.message.slice(0, 160), '\n   in:', s.slice(0, 120)); return `<code>${esc(s)}</code>`; }
 }
 function renderMath(html) {
   const keep = [];
@@ -78,7 +77,6 @@ ${renderMath(body)}
 </main>
 </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script>window.KMACROS=${JSON.stringify(macros)};</script>
 <script>${js}</script>`;
 

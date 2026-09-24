@@ -1,26 +1,16 @@
 (function(){
-  // ── 수식 렌더링: 보이는 장 근처부터, 나머지는 한가할 때 ──
-  function renderIn(root){
-    if (!window.katex) return false;
-    root.querySelectorAll('.m:not(.k),.md:not(.k)').forEach(function(el){
-      var src = el.textContent; el.classList.add('k');
-      try { window.katex.render(src, el, { displayMode: el.classList.contains('md'), macros: Object.assign({}, window.KMACROS || {}), throwOnError: false, strict: false }); } catch (e) {}
-    });
-    // 한 번에 읽기 (레이아웃 한 번만): 칸보다 넓은 인라인 수식은 가로 스크롤로
+  // ── 수식은 빌드 때 미리 그려져 있다. 칸보다 넓은 인라인 수식만 가로 스크롤로 ──
+  function fitMath(root){
     var wide = [];
-    root.querySelectorAll('.m.k').forEach(function(el){ var p = el.parentElement; if (p && el.offsetWidth > p.clientWidth) wide.push(el); });
+    root.querySelectorAll('.katex').forEach(function(el){ if (el.parentElement && !el.parentElement.classList.contains('katex-display')) { var p = el.parentElement; if (el.offsetWidth > p.clientWidth + 1) wide.push(el); } });
     wide.forEach(function(el){ el.classList.add('wide'); });
-    return true;
   }
   var secs = Array.prototype.slice.call(document.querySelectorAll('section.ch'));
-  if (window.katex) {
-    if ('IntersectionObserver' in window) {
-      var mio = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) { renderIn(e.target); mio.unobserve(e.target); } }); }, { rootMargin: '1500px 0px' });
-      secs.forEach(function(s){ mio.observe(s); });
-    }
-    var qi = 0, idle = window.requestIdleCallback || function(f){ return setTimeout(function(){ f({ timeRemaining: function(){ return 8; } }); }, 60); };
-    (function step(){ idle(function(){ while (qi < secs.length) { var s = secs[qi++]; if (s.querySelector('.m:not(.k),.md:not(.k)')) { renderIn(s); break; } } if (qi < secs.length) step(); }); })();
-  } else document.documentElement.classList.add('nokatex');
+  if ('IntersectionObserver' in window) {
+    var mio = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) { fitMath(e.target); mio.unobserve(e.target); } }); }, { rootMargin: '600px 0px' });
+    secs.forEach(function(s){ mio.observe(s); });
+  } else secs.forEach(fitMath);
+
   // ── ○/✕ 표시: 이 브라우저에만 저장 ──
   var KEY = 'tm3-marks-v1', marks = {};
   try { marks = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { marks = {}; }
